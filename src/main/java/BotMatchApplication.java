@@ -3,35 +3,43 @@ import entity.MatchRequest;
 import entity.MatchRequestStatus;
 
 import java.util.List;
-import java.util.Random;
 
 public class BotMatchApplication {
     public static void main(String[] args) {
 
         List<Bot> bots = initializeBots();
 
-        int a=7;
+        int a=4;
         Bot botCandidate;
         while (a>0) {
             a--;
             for (Bot bot : bots) {
-                //every bot looks through dating program and if beauty of a bot satisfies bot - it sends match-request
-                int randomIndex;
-                do {
-                    randomIndex = new Random().nextInt(bots.size());
-                } while (randomIndex == bots.indexOf(bot));
-                botCandidate = bots.get(randomIndex);
+                int candidateIndex = bot.findCandidate(bots);
+                botCandidate = bots.get(candidateIndex);
 
                 System.out.printf("%s is analyzing %s %n",
                         bot.toString(),
                         botCandidate.toString());
 
                 if (bot.analyzeBeautyWhetherSendRequest(botCandidate)) {
-                    bots.get(randomIndex).addRequest(
+                    bots.get(candidateIndex).addRequest(
                             bot.sendRequest(botCandidate));
                     System.out.printf("%s sent match-request to %s %n",
                             bot.toString(),
                             botCandidate.toString());
+                    String pickupLine = bot.generateResponseToTheText("""
+                            You are on a dating program and you found someone you would like to talk with - write a pickup line.
+                            ignore genders.
+                            
+                                        Rules:
+                                        - Speak naturally, like a human.
+                                        - Use simple everyday language.
+                                        - Keep responses relatively short.
+                            """).getFirst();
+                    System.out.printf("%s texted %s with message: %s %n",
+                            bot.toString(),
+                            botCandidate.toString(),
+                            pickupLine);
                 }
                 else {
                     System.out.printf("%s don't like sending match-request to %s %n",
@@ -62,22 +70,12 @@ public class BotMatchApplication {
     }
 
     public static List<Bot> initializeBots() {
-        Bot jake = new Bot();
-        jake.setName("Jake");
-        jake.setBeauty(List.of(4, 4, 2, 1));
-        Bot lisa = new Bot();
-        lisa.setName("Lisa");
-        lisa.setBeauty(List.of(2, 2, 3, 4));
-        Bot neitan = new Bot();
-        neitan.setName("Neitan");
-        neitan.setBeauty(List.of(1, 1, 2, 1));
-        Bot roze = new Bot();
-        roze.setName("Roze");
-        roze.setBeauty(List.of(3, 2, 3, 4));
-        Bot denis = new Bot();
-        denis.setName("Denis");
-        denis.setBeauty(List.of(2, 2, 3, 1));
+        Bot jake = new Bot("Jake", List.of(4, 4, 2, 1));
+        Bot lisa = new Bot("Lisa", List.of(2, 2, 3, 4));
+        Bot natan = new Bot("Natan", List.of(1, 1, 2, 1));
+        Bot roze = new Bot("Roze", List.of(3, 2, 3, 4));
+        Bot denis = new Bot("Denis", List.of(2, 2, 3, 1));
 
-        return List.of(jake, lisa, neitan, roze, denis);
+        return List.of(jake, lisa, natan, roze, denis);
     }
 }

@@ -2,22 +2,31 @@ package entity;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
+import com.openai.client.OpenAIClient;
+import com.openai.client.okhttp.OpenAIOkHttpClient;
+import com.openai.models.responses.Response;
+import com.openai.models.responses.ResponseCreateParams;
+import com.openai.models.responses.ResponseOutputText;
+import config.ApiKey;
 import org.apache.commons.lang3.StringUtils;
 
 public class Bot {
 
     private Long id;
 
-    private String name;
+    private final String name;
 
     private Integer motivation;
 
-    private List<Integer> beauty;
+    private final List<Integer> beauty;
 
     private List<MatchRequest> receivedRequests;
 
-    public Bot() {
+    public Bot(String name, List<Integer> beauty) {
+        this.name = name;
+        this.beauty = beauty;
         this.receivedRequests = new LinkedList<>();
     }
 
@@ -58,10 +67,6 @@ public class Bot {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public Integer getMotivation() {
         return motivation;
     }
@@ -72,10 +77,6 @@ public class Bot {
 
     public List<Integer> getBeauty() {
         return beauty;
-    }
-
-    public void setBeauty(List<Integer> beauty) {
-        this.beauty = beauty;
     }
 
     public void addRequest(MatchRequest request) {
@@ -96,5 +97,29 @@ public class Bot {
     @Override
     public String toString() {
         return this.getName() + "(" + StringUtils.join(beauty, ' ') + ")";
+    }
+
+    public int findCandidate(List<Bot> bots) {
+        int candidateIndex;
+        do {
+            candidateIndex = new Random().nextInt(bots.size());
+        } while (candidateIndex == bots.indexOf(this));
+
+        return candidateIndex;
+    }
+
+    public List<String> generateResponseToTheText(String requestText) {
+        OpenAIClient client = OpenAIOkHttpClient.builder().apiKey(ApiKey.getApiKey()).build();
+
+        ResponseCreateParams params =
+                ResponseCreateParams.builder().input(requestText).model("gpt-6.2-astra").build();
+
+        Response response = client.responses().create(params);
+        return response.output().stream()
+                .flatMap(item -> item.message().stream())
+                .flatMap(message -> message.content().stream())
+                .flatMap(content -> content.outputText().stream())
+                .map(ResponseOutputText::text)
+                .toList();
     }
 }
