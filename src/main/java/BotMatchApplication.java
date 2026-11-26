@@ -27,15 +27,16 @@ public class BotMatchApplication {
                     System.out.printf("%s sent match-request to %s %n",
                             bot.toString(),
                             botCandidate.toString());
-                    String pickupLine = bot.generateResponseToTheText("""
-                            You are on a dating program and you found someone you would like to talk with - write a pickup line.
-                            ignore genders.
+                    String pickupLine = bot.generateResponseToTheText(String.format("""
+                            You are on a dating program and you found someone you would like to talk with - write first message.
+                            Your personality: %s
+                            Person's personality: %s
                             
                                         Rules:
                                         - Speak naturally, like a human.
                                         - Use simple everyday language.
                                         - Keep responses relatively short.
-                            """).getFirst();
+                            """, bot.getSummaryPersonality(), botCandidate.getSummaryPersonality())).getFirst();
                     System.out.printf("%s texted %s with message: %s %n",
                             bot.toString(),
                             botCandidate.toString(),
@@ -70,11 +71,36 @@ public class BotMatchApplication {
     }
 
     public static List<Bot> initializeBots() {
-        Bot jake = new Bot("Jake", List.of(4, 4, 2, 1));
-        Bot lisa = new Bot("Lisa", List.of(2, 2, 3, 4));
-        Bot natan = new Bot("Natan", List.of(1, 1, 2, 1));
-        Bot roze = new Bot("Roze", List.of(3, 2, 3, 4));
-        Bot denis = new Bot("Denis", List.of(2, 2, 3, 1));
+        Bot jake = new Bot("Jake", List.of(4, 4, 2, 1), """
+        Jake is 21 years old and male.
+        He doesn't really have any profession, he just hangs out with friends.
+        He likes active sports, mostly ping-pong.
+        He doesn't have much money, generally earning it from part-time jobs.
+        Currently, he works as a pizza delivery guy.""");
+
+        Bot lisa = new Bot("Lisa", List.of(2, 2, 3, 4), """
+        Lisa is 24 years old and female.
+        She is a graphic designer, mostly enjoying drawing and photography.
+        She has an average income, working remotely for a small design studio and occasionally taking freelance projects.
+        She also has a small collection of vintage cameras.""");
+
+        Bot natan = new Bot("Natan", List.of(1, 1, 2, 1), """
+        Natan is 19 years old and male.
+        He is a student, mostly enjoying gaming and basketball.
+        He doesn't have a stable income, occasionally earning money by helping his parents and doing small online jobs.
+        He loves competitive games.""");
+
+        Bot roze = new Bot("Roze", List.of(3, 2, 3, 4), """
+        Roze is 27 years old and female.
+        She is a bartender, mostly enjoying traveling and socializing.
+        She has a modest but stable income, mostly spending it on experiences and going out.
+        She also has a pet cat named Milo.""");
+
+        Bot denis = new Bot("Denis", List.of(2, 2, 3, 1), """
+        Denis is 30 years old and male.
+        He is a mechanic, mostly enjoying cars and fishing.
+        He earns decent money working at a local garage, but he doesn't save much.
+        He also enjoys fixing old motorcycles.""");
 
         return List.of(jake, lisa, natan, roze, denis);
     }

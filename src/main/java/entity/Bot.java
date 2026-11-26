@@ -24,10 +24,13 @@ public class Bot {
 
     private List<MatchRequest> receivedRequests;
 
-    public Bot(String name, List<Integer> beauty) {
+    private String summaryPersonality;
+
+    public Bot(String name, List<Integer> beauty, String summaryPersonality) {
         this.name = name;
         this.beauty = beauty;
         this.receivedRequests = new LinkedList<>();
+        this.summaryPersonality = summaryPersonality;
     }
 
     //the same as acceptedBeautyOfCandidate-function for now
@@ -77,6 +80,14 @@ public class Bot {
 
     public List<Integer> getBeauty() {
         return beauty;
+    }
+
+    public String getSummaryPersonality() {
+        return summaryPersonality;
+    }
+
+    public void setSummaryPersonality(String summaryPersonality) {
+        this.summaryPersonality = summaryPersonality;
     }
 
     public void addRequest(MatchRequest request) {
