@@ -1,15 +1,73 @@
 import entity.Bot;
-import entity.MatchRequest;
-import entity.MatchRequestStatus;
+import javafx.application.Application;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import workers.BotCycle;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-public class BotMatchApplication {
+public class BotMatchApplication extends Application {
+
+    private final HashMap<String, Label> texts = new HashMap<>();
+
+    private VBox body;
+
+    @Override
+    public void start(Stage stage) {
+
+        // Top structure
+        Button button1 = new Button("Button 1");
+        Label shortText = new Label("BotMatch Statistics");
+        Button button2 = new Button("Button 2");
+
+        shortText.setStyle("-fx-text-fill: white;");
+
+        HBox top = new HBox(15, button1, shortText, button2);
+        top.setAlignment(Pos.CENTER);
+
+        // Main body
+        body = new VBox(15);
+        body.setPadding(new Insets(20));
+        body.setStyle("-fx-background-color: black;");
+
+        // Register labels
+        texts.put("top", shortText);
+
+        addText("messages", "Messages: 150");
+        addText("users", "Active users: 25");
+        addText("response", "Response time: 2.4s");
+
+        // Main layout
+        BorderPane root = new BorderPane();
+        root.setTop(top);
+        root.setCenter(body);
+        root.setStyle("-fx-background-color: black;");
+
+        Scene scene = new Scene(root, 800, 600);
+
+        stage.setTitle("BotMatch");
+        stage.setScene(scene);
+        stage.show();
+
+        button1.setOnAction(event ->
+                setText("top", "Button 1 clicked!"));
+
+        button2.setOnAction(event ->
+                setText("messages", "Messages: 500"));
+    }
+
     public static void main(String[] args) {
 
         List<Bot> bots = initializeBots();
@@ -25,6 +83,8 @@ public class BotMatchApplication {
             threads.add(future);
         }
         ///
+
+        launch(args);
 
 /*        int a=4;
         Bot botCandidate;
@@ -85,6 +145,39 @@ public class BotMatchApplication {
             }
             System.out.println("--------------------------------------\n");
         }*/
+    }
+
+    public void addText(String name, String text) {
+
+        Label label = new Label(text);
+
+        label.setStyle("""
+            -fx-font-size: 18px;
+            -fx-text-fill: white;
+            """);
+
+        texts.put(name, label);
+        body.getChildren().add(label);
+    }
+
+    public void setText(String name, String text) {
+
+        Label label = texts.get(name);
+
+        if (label != null) {
+            label.setText(text);
+        } else {
+            System.out.println("Label not found: " + name);
+        }
+    }
+
+    public void removeText(String name) {
+
+        Label label = texts.remove(name);
+
+        if (label != null) {
+            body.getChildren().remove(label);
+        }
     }
 
     public static List<Bot> initializeBots() {
