@@ -1,15 +1,32 @@
 import entity.Bot;
 import entity.MatchRequest;
 import entity.MatchRequestStatus;
+import workers.BotCycle;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class BotMatchApplication {
     public static void main(String[] args) {
 
         List<Bot> bots = initializeBots();
 
-        int a=4;
+        ///
+        ExecutorService executor = Executors.newFixedThreadPool(bots.size());
+
+        List<Future<?>> threads = new ArrayList<>();
+
+        for (Bot bot : bots) {
+            Future<?> future = executor.submit(() -> BotCycle.cycle(bot));
+
+            threads.add(future);
+        }
+        ///
+
+/*        int a=4;
         Bot botCandidate;
         while (a>0) {
             a--;
@@ -67,7 +84,7 @@ public class BotMatchApplication {
                 System.out.println();
             }
             System.out.println("--------------------------------------\n");
-        }
+        }*/
     }
 
     public static List<Bot> initializeBots() {
